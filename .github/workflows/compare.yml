@@ -60,7 +60,7 @@ jobs:
         env:
           WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: |
-          python ../scripts/wandb_comparator.py \
+          python .github/workflows/wandb_comparator.py \
             --repo ${{ github.repository }} \
             --pr_number ${{ github.event.issue.number }} \
             --run_id ${{ steps.get-magic-value.outputs.MAGIC_VAL }} \
