@@ -1,0 +1,62 @@
+name: Compare
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  MAGIC_COMMENT: "/wandb"
+
+jobs:
+  wandb_comparator:
+    if: github.event.issue.pull_request != null
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wandb ghapi
+
+      - name: See payload (for debugging purposes)
+        run: echo "PAYLOAD:\n${{ toJSON(github.event) }}\n"
+
+      - name: Filter for magic comment
+        id: filter
+        if: contains(github.event.comment.body, env.MAGIC_COMMENT)
+        run: echo "Magic comment detected"
+
+      - name: Parse value from the magic command
+        if: steps.filter.outcome == 'success'
+        id: get-magic-value
+        shell: python
+        run: |
+          import re, os
+          comment = os.getenv('PR_COMMENT', '')
+          match = re.search(f"{os.getenv('MAGIC_COMMENT')}[\\s+](\\S+)", comment)
+          if match:
+              print(f'VAL_FOUND=true\nMAGIC_VAL={match.group(1)}')
+          else:
+              print('VAL_FOUND=false')
+        env:
+          PR_COMMENT: ${{ github.event.comment.body }}
+
+      - name: Run W&B Comparator Script
+        if: steps.get-magic-value.outputs.VAL_FOUND == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          RUN_ID: ${{ steps.get-magic-value.outputs.MAGIC_VAL }}
+        run: python .github/scripts/wandb_comparator.py
