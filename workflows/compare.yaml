@@ -56,7 +56,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.issue.number }}
-          RUN_ID: ${{ steps.get-magic-value.outputs.MAGIC_VAL }}
-        run: python .github/scripts/wandb_comparator.py
+        run: |
+          python .github/scripts/wandb_comparator.py \
+            --repo ${{ github.repository }} \
+            --pr_number ${{ github.event.issue.number }} \
+            --run_id ${{ steps.get-magic-value.outputs.MAGIC_VAL }} \
+            --token ${{ secrets.GITHUB_TOKEN }}
