@@ -36,15 +36,15 @@ def main():
     except wandb.errors.CommError:
         raise ValueError(f"No run found with ID {args.run_id}.")
 
-    report = wr.Report(
+    report = ws.Report(
         entity="bwojcik",
         project="cicd-quickstart",
         title="Baseline comparison",
         description=f"Baseline vs {args.run_id}.",
     )
-    pg = wr.PanelGrid(
-        runsets=[wr.Runset(entity, project, "Run Comparison").set_filters_with_python_expr(f"ID in ['{run_id}', '{baseline.id}']")],
-        panels=[wr.RunComparer(diff_only='split', layout={'w': 24, 'h': 15}),]
+    pg = ws.PanelGrid(
+        runsets=[ws.Runset(entity, project, "Run Comparison").set_filters_with_python_expr(f"ID in ['{run_id}', '{baseline.id}']")],
+        panels=[ws.RunComparer(diff_only='split', layout={'w': 24, 'h': 15}),]
     )
     report.blocks = report.blocks[:1] + [pg] + report.blocks[1:]
     report.save()
