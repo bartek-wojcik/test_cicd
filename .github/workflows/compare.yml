@@ -49,10 +49,13 @@ jobs:
         env:
           PR_COMMENT: ${{ github.event.comment.body }}
 
+      - name: print value of magic command
+        if:  steps.get-magic-value.outcome == 'success' && steps.get-magic-value.outputs.VAL_FOUND == 'true'
+        run: echo "the value is ${{ steps.get-magic-value.outputs.MAGIC_VAL }}"
+
       - name: Run W&B Comparator Script
-        if: steps.get-magic-value.outputs.VAL_FOUND == 'true'
+        if: steps.get-magic-value.outcome == 'success'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: |
           python scripts/wandb_comparator.py \
