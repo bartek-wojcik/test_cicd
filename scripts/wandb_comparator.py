@@ -43,7 +43,7 @@ def main():
         description=f"Baseline vs {args.run_id}.",
     )
     pg = wr.PanelGrid(
-        runsets=[wr.Runset(entity, project, "Run Comparison").set_filters_with_python_expr(f"ID in ['{run_id}', '{baseline.id}']")],
+        runsets=[wr.Runset('bwojcik', 'cicd-qucikstart', "Run Comparison").set_filters_with_python_expr(f"ID in ['{args.run_id}', '{baseline.id}']")],
         panels=[wr.RunComparer(diff_only='split', layout={'w': 24, 'h': 15}),]
     )
     report.blocks = report.blocks[:1] + [pg] + report.blocks[1:]
