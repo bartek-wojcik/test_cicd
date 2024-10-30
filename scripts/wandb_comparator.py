@@ -4,7 +4,7 @@ import os
 import argparse
 import wandb
 from ghapi.all import GhApi
-import wandb_workspaces.reports.v2 as wr
+import wandb_workspaces.workspaces as ws
 
 def main():
     # Parse arguments from the command line
