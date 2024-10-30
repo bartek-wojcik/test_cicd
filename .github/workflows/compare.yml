@@ -41,11 +41,13 @@ jobs:
         run: |
           import re, os
           comment = os.getenv('PR_COMMENT', '')
-          match = re.search(f"{os.getenv('MAGIC_COMMENT')}[\\s+](\\S+)", comment)
-          if match:
-              print(f'VAL_FOUND=true\nMAGIC_VAL={match.group(1)}')
-          else:
-              print('VAL_FOUND=false')
+          match = re.search('${{ env.MAGIC_COMMENT }}[\s+](\S+)', comment)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            if match:
+              print(f'VAL_FOUND=true', file=f)
+              print(f'MAGIC_VAL={match.group(1)}', file=f)
+            else:
+              print(f'VAL_FOUND=false', file=f)
         env:
           PR_COMMENT: ${{ github.event.comment.body }}
 
@@ -58,7 +60,7 @@ jobs:
         env:
           WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: |
-          python scripts/wandb_comparator.py \
+          python ../scripts/wandb_comparator.py \
             --repo ${{ github.repository }} \
             --pr_number ${{ github.event.issue.number }} \
             --run_id ${{ steps.get-magic-value.outputs.MAGIC_VAL }} \
