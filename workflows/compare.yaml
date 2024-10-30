@@ -1,4 +1,4 @@
-name: Compare
+name: ChatOps
 
 on:
   issue_comment:
@@ -54,9 +54,10 @@ jobs:
       - name: Run W&B Comparator Script
         if: steps.get-magic-value.outputs.VAL_FOUND == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.issue.number }}
-          RUN_ID: ${{ steps.get-magic-value.outputs.MAGIC_VAL }}
-        run: python .github/scripts/wandb_comparator.py
+        run: |
+          python .github/scripts/wandb_comparator.py \
+            --owner ${{ github.repository_owner }} \
+            --repo ${{ github.event.repository.name }} \
+            --pr_number ${{ github.event.issue.number }} \
+            --run_id ${{ steps.get-magic-value.outputs.MAGIC_VAL }}
