@@ -24,14 +24,14 @@ def main():
     # Fetch the baseline run with tag "baseline"
     try:
         baseline_run = next(
-            run for run in wandb_api.runs(path=args.repo) if 'baseline' in run.tags
+            run for run in wandb_api.runs(path='cicd-quickstart') if 'baseline' in run.tags
         )
     except StopIteration:
         raise ValueError("No baseline run found with the tag 'baseline'.")
 
     # Fetch the specified comparison run by run_id
     try:
-        comparison_run = wandb_api.run(f"{args.repo}/{args.run_id}")
+        comparison_run = wandb_api.run(f"cicd-quickstart/{args.run_id}")
     except wandb.errors.CommError:
         raise ValueError(f"No run found with ID {args.run_id}.")
 
